@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    [SerializeField] float arrowSpeed = 10f;
+    /*[SerializeField] float arrowSpeed = 10f;
     Rigidbody2D myRigidbody;
     PlayerMovement player;
     float xSpeed = 1;
@@ -28,10 +28,9 @@ public class Arrow : MonoBehaviour
         }
         Destroy(gameObject);
     }
-    
+
     void OnCollisionEnter2D(Collision2D other)
     {
         Destroy(gameObject);
-    }
-
+    }*/
 }

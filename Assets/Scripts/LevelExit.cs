@@ -1,11 +1,11 @@
 using System.Collections;
-using UnityEditor.SceneTemplate;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelExit : MonoBehaviour
 {
     [SerializeField] float levelLoadDelay = 1;
+
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Player")
@@ -24,6 +24,7 @@ public class LevelExit : MonoBehaviour
         {
             nextSceneIndex = 0;
         }
+
         SceneManager.LoadScene(nextSceneIndex);
     }
 }

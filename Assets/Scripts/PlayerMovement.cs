@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject arrow;
     [SerializeField] Transform bow;
     [SerializeField] Vector2 deathKick = new Vector2(10f, 10f);
+    [SerializeField] private WallJumping wallJumping;
 
     public Rigidbody2D myRigidbody;
     public float jumpSpeed = 5f;
@@ -67,12 +68,25 @@ public class PlayerMovement : MonoBehaviour
 
         if (value.isPressed)
         {
-            if (!_myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+            if (_myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
             {
-                return;
+                myRigidbody.linearVelocity += new Vector2(0f, jumpSpeed);
             }
 
-            myRigidbody.linearVelocity += new Vector2(0f, jumpSpeed);
+            if (_myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Wall")))
+            {
+                myRigidbody.linearVelocityY = 0;
+                if (myRigidbody.linearVelocity.x < 0f)
+                {
+                    myRigidbody.linearVelocityX = 0;
+                    myRigidbody.linearVelocity += new Vector2(-15f, 17f);
+                }
+                else
+                {
+                    myRigidbody.linearVelocityX = 0;
+                    myRigidbody.linearVelocity += new Vector2(15f, 17f);
+                }
+            }
         }
     }
 

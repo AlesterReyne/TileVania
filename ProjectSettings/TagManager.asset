@@ -21,7 +21,7 @@ TagManager:
   - Hazards
   - Arrow
   - Interactables
-  - 
+  - Wall
   - 
   - 
   - 
@@ -47,6 +47,9 @@ TagManager:
     locked: 0
   - name: Platforms
     uniqueID: 453168779
+    locked: 0
+  - name: Wall
+    uniqueID: 4292021817
     locked: 0
   - name: Climbing
     uniqueID: 1263628769
