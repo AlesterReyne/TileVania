@@ -5,71 +5,107 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] float runSpeed = 7.5f;
-    [SerializeField] float jumpSpeed = 5f;
     [SerializeField] float climbingSpeed = 1f;
-    [SerializeField] Vector2 deathKick = new Vector2(10f, 10f);
+    [SerializeField] float arrowSpeed = 10f;
     [SerializeField] GameObject arrow;
     [SerializeField] Transform bow;
-    [SerializeField] float arrowSpeed = 10f;
+    [SerializeField] Vector2 deathKick = new Vector2(10f, 10f);
 
-    Vector2 moveInput;
-    Rigidbody2D myRigidbody;
-    Animator myAnimator;
-    CapsuleCollider2D myBodyCollider;
-    BoxCollider2D myFeetCollider;
-    SpriteRenderer mySpriteRenderer;
-    private float gravityScaleAtStart;
-    bool isAlive = true;
+    public Rigidbody2D myRigidbody;
+    public float jumpSpeed = 5f;
+
+    private Vector2 _moveInput;
+    private Animator _myAnimator;
+    private CapsuleCollider2D _myBodyCollider;
+    private BoxCollider2D _myFeetCollider;
+    private SpriteRenderer _mySpriteRenderer;
+    private float _gravityScaleAtStart;
+    private bool _isAlive = true;
+    [SerializeField] private bool _onJump = false;
 
     void Start()
     {
         myRigidbody = GetComponent<Rigidbody2D>();
-        myAnimator = GetComponent<Animator>();
-        myBodyCollider = GetComponent<CapsuleCollider2D>();
-        myFeetCollider = GetComponent<BoxCollider2D>();
-        mySpriteRenderer = GetComponent<SpriteRenderer>();
-        gravityScaleAtStart = myRigidbody.gravityScale;
+        _myAnimator = GetComponent<Animator>();
+        _myBodyCollider = GetComponent<CapsuleCollider2D>();
+        _myFeetCollider = GetComponentInChildren<BoxCollider2D>();
+        _mySpriteRenderer = GetComponent<SpriteRenderer>();
+        _gravityScaleAtStart = myRigidbody.gravityScale;
     }
 
     void Update()
     {
-        if (!isAlive) { return; }
-        Run();
+        if (!_isAlive)
+        {
+            return;
+        }
+
+        if (!_onJump) Run();
         FlipSprite();
         ClimbLadder();
         Die();
+        IfOnJump();
     }
+
 
     void OnMove(InputValue value)
     {
-        if (!isAlive) { return; }
-        moveInput = value.Get<Vector2>();
+        if (!_isAlive)
+        {
+            return;
+        }
+
+        _moveInput = value.Get<Vector2>();
     }
 
-    void OnJump(InputValue value)
+    public void OnJump(InputValue value)
     {
-        if (!isAlive) { return; }
+        if (!_isAlive)
+        {
+            return;
+        }
+
         if (value.isPressed)
         {
-            if (!myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground"))) { return; }
+            if (!_myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+            {
+                return;
+            }
+
             myRigidbody.linearVelocity += new Vector2(0f, jumpSpeed);
+        }
+    }
+
+    private void IfOnJump()
+    {
+        if (_myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+        {
+            _onJump = false;
+        }
+        else
+        {
+            _onJump = true;
         }
     }
 
     void OnFire(InputValue value)
     {
-        if (!isAlive) { return; }
+        if (!_isAlive)
+        {
+            return;
+        }
+
         Instantiate(arrow, bow.position, transform.rotation);
     }
 
     void Run()
     {
-        Vector2 playerVelocity = new Vector2(moveInput.x * runSpeed, myRigidbody.linearVelocity.y);
+        Vector2 playerVelocity = new Vector2(_moveInput.x * runSpeed, myRigidbody.linearVelocity.y);
         myRigidbody.linearVelocity = playerVelocity;
 
         bool playerHasHorizontalSpeed = Mathf.Abs(myRigidbody.linearVelocity.x) > Mathf.Epsilon;
 
-        myAnimator.SetBool("isRunning", playerHasHorizontalSpeed);
+        _myAnimator.SetBool("isRunning", playerHasHorizontalSpeed);
     }
 
     void FlipSprite()
@@ -84,27 +120,28 @@ public class PlayerMovement : MonoBehaviour
 
     void ClimbLadder()
     {
-        if (!myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Climbing")))
+        if (!_myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Climbing")))
         {
-            myRigidbody.gravityScale = gravityScaleAtStart;
-            myAnimator.SetBool("isClimbing", false);
+            myRigidbody.gravityScale = _gravityScaleAtStart;
+            _myAnimator.SetBool("isClimbing", false);
             return;
         }
-        myRigidbody.linearVelocity = new Vector2(myRigidbody.linearVelocity.x, moveInput.y * climbingSpeed);
+
+        myRigidbody.linearVelocity = new Vector2(myRigidbody.linearVelocity.x, _moveInput.y * climbingSpeed);
         myRigidbody.gravityScale = 0f;
 
-        bool playerHasVerticalSpeed = MathF.Abs(moveInput.y) > Mathf.Epsilon;
-        myAnimator.SetBool("isClimbing", playerHasVerticalSpeed);
+        bool playerHasVerticalSpeed = MathF.Abs(_moveInput.y) > Mathf.Epsilon;
+        _myAnimator.SetBool("isClimbing", playerHasVerticalSpeed);
     }
 
     void Die()
     {
-        if (myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemies", "Hazards")))
+        if (_myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemies", "Hazards")))
         {
-            isAlive = false;
-            myAnimator.SetTrigger("Dying");
+            _isAlive = false;
+            _myAnimator.SetTrigger("Dying");
             myRigidbody.linearVelocity = deathKick;
-            mySpriteRenderer.color = Color.gray;
+            _mySpriteRenderer.color = Color.gray;
             FindFirstObjectByType<GameSession>().ProcessPlayerDeath();
         }
     }
