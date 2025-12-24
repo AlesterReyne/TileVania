@@ -102,15 +102,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void OnFire(InputValue value)
-    {
-        if (!_isAlive)
-        {
-            return;
-        }
-
-        Instantiate(arrow, bow.position, transform.rotation);
-    }
+    // void OnFire(InputValue value)
+    // {
+    //     if (!_isAlive)
+    //     {
+    //         return;
+    //     }
+    //
+    //     Instantiate(arrow, bow.position, transform.rotation);
+    // }
 
     void Run()
     {

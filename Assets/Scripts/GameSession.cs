@@ -7,6 +7,7 @@ public class GameSession : MonoBehaviour
 {
     [SerializeField] int playerLives = 3;
     [SerializeField] float deathDelay = 2;
+
     void Awake()
     {
         int numGameSessions = FindObjectsOfType<GameSession>().Length;
@@ -22,15 +23,15 @@ public class GameSession : MonoBehaviour
 
     public void ProcessPlayerDeath()
     {
-        if (playerLives > 1)
-        {
-            StartCoroutine(TakesLife());
-        }
-        else
-        {
-            StartCoroutine(ResetGameSession());
-
-        }
+        StartCoroutine(TakesLife());
+        // if (playerLives > 1)
+        // {
+        //     StartCoroutine(TakesLife());
+        // }
+        // else
+        // {
+        //     //StartCoroutine(ResetGameSession());
+        // }
     }
 
     private IEnumerator TakesLife()
@@ -47,5 +48,4 @@ public class GameSession : MonoBehaviour
         SceneManager.LoadScene(0);
         Destroy(gameObject);
     }
-
 }
